@@ -102,6 +102,7 @@ module.exports = exports = function(Nightmare) {
       done();
     },
     function() {
+      let updatedCounter = 0;
       var self = this,
         path, done;
       if (arguments.length == 2) {
@@ -110,7 +111,7 @@ module.exports = exports = function(Nightmare) {
       } else {
         done = arguments[0];
       }
-      
+
       var handler = function(state, downloadInfo) {
         downloadInfo.state = state;
         debug('download', downloadInfo);
@@ -127,6 +128,11 @@ module.exports = exports = function(Nightmare) {
           } else if (state == 'completed' || state == 'cancelled') {
             self.child.removeListener('download', handler);
             done(null, downloadInfo);
+          } else if (state == 'updated') {
+            updatedCounter++;
+            if (updatedCounter > 1) {
+              debug('This download had been updated ' + updatedCounter + ' times.');
+            }
           }
         }
       };
